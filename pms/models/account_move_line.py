@@ -48,8 +48,9 @@ class AccountMoveLine(models.Model):
         readonly=False,
     )
 
-    @api.depends("quantity")
+    @api.depends('move_id.payment_reference', "quantity")
     def _compute_name(self):
+        res = super()._compute_name()
         for record in self:
             record.name = self.env["folio.sale.line"].generate_folio_sale_name(
                 record.folio_line_ids.reservation_id,
@@ -59,6 +60,7 @@ class AccountMoveLine(models.Model):
                 record.folio_line_ids.service_line_ids,
                 qty=record.quantity,
             )
+        return res
             # TODO: check why this code doesn't work
             # if not record.name_changed_by_user:
             #   record.with_context(auto_name=True).name = self
