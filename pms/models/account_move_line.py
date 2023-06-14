@@ -52,7 +52,7 @@ class AccountMoveLine(models.Model):
     def _compute_name(self):
         res = super()._compute_name()
         for record in self:
-            record.name = self.env["folio.sale.line"].generate_folio_sale_name(
+            name = self.env["folio.sale.line"].generate_folio_sale_name(
                 record.folio_line_ids.reservation_id,
                 record.product_id,
                 record.folio_line_ids.service_id,
@@ -60,6 +60,8 @@ class AccountMoveLine(models.Model):
                 record.folio_line_ids.service_line_ids,
                 qty=record.quantity,
             )
+            if name:
+                record.name = name
         return res
             # TODO: check why this code doesn't work
             # if not record.name_changed_by_user:
